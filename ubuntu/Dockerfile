@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y locales \
     && locale-gen en_US.UTF-8
 ENV LANG en_US.utf8
 
-RUN apt-get update && apt-get install -y uwsgi uwsgi-plugin-python3 python3-pip && \
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy uwsgi uwsgi-plugin-python3 python3-pip && \
     pip3 install --no-cache --upgrade pip
 
 ENV SERVICE_MOUNTPOINT='/'
