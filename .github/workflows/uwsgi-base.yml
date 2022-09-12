@@ -21,6 +21,10 @@ jobs:
             echo ::set-output name=ubuntu_tag::latest
           fi
 
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build and publish Alpine docker image
         uses: elgohr/Publish-Docker-Github-Action@2.12
         with:
@@ -29,6 +33,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
           workdir: alpine
+          platforms: linux/amd64,linux/arm64
 
       - name: Build and publish Ubuntu docker image
         uses: elgohr/Publish-Docker-Github-Action@2.12
@@ -38,3 +43,4 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
           workdir: ubuntu
+          platforms: linux/amd64,linux/arm64
