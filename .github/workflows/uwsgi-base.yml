@@ -21,26 +21,29 @@ jobs:
             echo ::set-output name=ubuntu_tag::latest
           fi
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
 
       - name: Build and publish Alpine docker image
-        uses: elgohr/Publish-Docker-Github-Action@2.12
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: sourcepole/qwc-uwsgi-base
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
           workdir: alpine
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64,linux/amd64
 
       - name: Build and publish Ubuntu docker image
-        uses: elgohr/Publish-Docker-Github-Action@2.12
+        uses: elgohr/Publish-Docker-Github-Action@v4
         with:
           name: sourcepole/qwc-uwsgi-base
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
           workdir: ubuntu
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64,linux/amd64
