@@ -14,11 +14,11 @@ jobs:
         id: get_tag
         run: |
           if [ ${{ startsWith(github.ref, 'refs/tags/') }} = true ]; then
-            echo ::set-output name=alpine_tag::${GITHUB_REF:10}
-            echo ::set-output name=ubuntu_tag::${GITHUB_REF:10}
+            echo "alpine_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
+            echo "ubuntu_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
           else
-            echo ::set-output name=alpine_tag::latest
-            echo ::set-output name=ubuntu_tag::latest
+            echo "alpine_tag=latest" >>$GITHUB_OUTPUT
+            echo "ubuntu_tag=latest" >>$GITHUB_OUTPUT
           fi
 
       - name: Set up QEMU
