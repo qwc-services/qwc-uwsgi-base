@@ -1,6 +1,6 @@
 # WSGI service environment
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 # Set locale (i.e. for psql client_encoding)
 RUN apt-get update && apt-get install -y locales \
