@@ -17,7 +17,10 @@ ENV PGSERVICEFILE="/srv/pg_service.conf"
 
 STOPSIGNAL SIGINT
 
-ENTRYPOINT uwsgi --http-socket :9090 --buffer-size $REQ_HEADER_BUFFER_SIZE --processes $UWSGI_PROCESSES \
+ENTRYPOINT ["/bin/sh", "-c", "\
+    mkdir /home/qwc && \
+    chown $SERVICE_UID:$SERVICE_GID /home/qwc && \
+    HOME=/home/qwc uwsgi --http-socket :9090 --buffer-size $REQ_HEADER_BUFFER_SIZE --processes $UWSGI_PROCESSES \
     --threads $UWSGI_THREADS --plugins python3 $UWSGI_EXTRA --protocol uwsgi --wsgi-disable-file-wrapper \
     --uid $SERVICE_UID --gid $SERVICE_GID --master --chdir /srv/qwc_service --mount $SERVICE_MOUNTPOINT=server:app \
-    --manage-script-name
+    --manage-script-name"]
