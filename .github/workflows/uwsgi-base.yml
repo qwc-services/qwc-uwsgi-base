@@ -1,6 +1,6 @@
 name: Publish qwc-uwsgi-base docker image
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
 
