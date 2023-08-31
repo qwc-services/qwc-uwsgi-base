@@ -2,8 +2,16 @@
 
 FROM alpine:3.18
 
+# Install uwsgi and pip
 RUN apk add --no-cache --update shadow python3 py3-pip uwsgi uwsgi-python3 && \
     pip3 install --no-cache --upgrade pip
+
+# Install helper packages that will be used by developers
+# * vim
+# * ping
+# * netstat
+# * curl
+RUN apk add --no-cache --update vim iputils net-tools curl
 
 ENV SERVICE_UID=33
 ENV SERVICE_GID=33

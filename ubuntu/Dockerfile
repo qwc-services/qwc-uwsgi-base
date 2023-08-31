@@ -7,8 +7,16 @@ RUN apt-get update && apt-get install -y locales \
     && locale-gen en_US.UTF-8
 ENV LANG en_US.utf8
 
+# Install uwsgi and pip
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy uwsgi uwsgi-plugin-python3 python3-pip ca-certificates && \
     pip3 install --no-cache --upgrade pip
+
+# Install helper packages that will be used by developers
+# * vim
+# * ping
+# * netstat
+# * curl
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy vim iputils-ping net-tools curl
 
 ENV SERVICE_UID=33
 ENV SERVICE_GID=33
