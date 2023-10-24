@@ -5,3 +5,8 @@ QWC uWSGI Base
 ==============
 
 QWC docker uWSGI base images for QWC services.
+
+Locale configuration
+--------------------
+
+The ubuntu-based `qwc-uwsgi-base` supports a `LOCALE` environment variable, in the form `lang_COUNTRY` (i.e. `de_CH`) to set the runtime locale.
