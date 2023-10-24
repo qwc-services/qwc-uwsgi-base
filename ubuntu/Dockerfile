@@ -5,7 +5,7 @@ FROM ubuntu:22.04
 # Set locale (i.e. for psql client_encoding)
 RUN apt-get update && apt-get install -y locales \
     && locale-gen en_US.UTF-8
-ENV LANG en_US.utf8
+ENV LOCALE en_US
 
 RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy uwsgi uwsgi-plugin-python3 python3-pip ca-certificates && \
     pip3 install --no-cache --upgrade pip
