@@ -8,6 +8,8 @@ if [ $LOCALE != 'en_US' ]; then
   localedef -i $LOCALE -c -f UTF-8 -A /usr/share/locale/locale.alias /tmp/locale-archive/$LOCALE.UTF-8
   export LOCPATH=/tmp/locale-archive
   export LANG=${LOCALE}.UTF-8
+else
+  export LANG=en_US.UTF-8
 fi
 
 # NOTE: Set home to /tmp to ensure a writeable home directory exists
