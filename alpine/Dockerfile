@@ -1,6 +1,6 @@
 # WSGI service environment
 
-FROM alpine:3.18
+FROM alpine:3.21
 
 RUN apk add --no-cache --update shadow python3 py3-pip uwsgi uwsgi-python3 && \
     pip3 install --no-cache --upgrade pip
