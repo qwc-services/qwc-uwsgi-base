@@ -7,8 +7,11 @@ RUN apt-get update && apt-get install -y locales \
     && locale-gen en_US.UTF-8
 ENV LOCALE en_US
 
-RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy uwsgi uwsgi-plugin-python3 python3-pip ca-certificates && \
-    pip3 install --no-cache --upgrade pip
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && apt-get install -qy uwsgi uwsgi-plugin-python3 ca-certificates
+# Ubuntu 24.04 is based on Debian trixie -> update uv image when available
+COPY --from=ghcr.io/astral-sh/uv:bookworm /usr/local/bin/uv /usr/local/bin/uvx /bin/
+
+ENV UV_COMPILE_BYTECODE=1
 
 ENV SERVICE_UID=33
 ENV SERVICE_GID=33

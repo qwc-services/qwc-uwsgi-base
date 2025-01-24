@@ -15,5 +15,5 @@ fi
 # NOTE: Set home to /tmp to ensure a writeable home directory exists
 HOME=/tmp uwsgi --http-socket :9090 --buffer-size $REQ_HEADER_BUFFER_SIZE --processes $UWSGI_PROCESSES \
     --threads $UWSGI_THREADS --plugins python3 $UWSGI_EXTRA --protocol uwsgi --wsgi-disable-file-wrapper \
-    --uid $SERVICE_UID --gid $SERVICE_GID --master --chdir /srv/qwc_service --mount $SERVICE_MOUNTPOINT=server:app \
-    --manage-script-name
+    --uid $SERVICE_UID --gid $SERVICE_GID --master --chdir /srv/qwc_service --virtualenv /srv/qwc_service/.venv \
+    --mount $SERVICE_MOUNTPOINT=server:app --manage-script-name
