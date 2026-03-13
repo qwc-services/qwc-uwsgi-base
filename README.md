@@ -24,10 +24,10 @@ Multiple environment variables are available:
 Extra uWSGI parameters
 ----------------------
 
-When using `UWSGI_EXTRA`, there are some caveats:
+`UWSGI_EXTRA` does not support quoted arguments. For instance, `UWSGI_EXTRA: --parameter-name='my quoted value'` will expand to multiple parameters `--parameter-name='my`, `quoted` and `value'`, therefore it will try to load configuration file `quoted` and fail: `unable to load configuration from quoted`.
 
-- The variable will be expanded as a _single_ argument, thus you should use `UWSGI_EXTRA: --parameter-name=parameter-value`, not `UWSGI_EXTRA: --parameter-name parameter-value`
-- As a consequence, you cannot use multiple parameters. A workaround is to use a mounted uwsgi.ini file, for instance:
+If you wish to use quoted values (for `logformat` for instance), a workaround is to use a mounted `uwsgi.ini` file, for instance:
+
   1. define `UWSGI_EXTRA: --ini=/etc/uwsgi.ini`
   2. add the parameters in a `uwsgi.ini` file:
 
@@ -35,7 +35,7 @@ When using `UWSGI_EXTRA`, there are some caveats:
       [uwsgi]
       logdate = %%Y-%%m-%%d %%H:%%M:%%S
       logformat-strftime = true
-      logformat = [%(ftime).%(msecs)] "%(method) %(uri) %(proto)" %(status)
+      logformat = [%(ftime)] "%(method) %(uri) %(proto)" %(status)
       ```
 
   3. mount that file in your Docker container
