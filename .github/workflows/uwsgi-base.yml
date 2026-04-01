@@ -1,12 +1,15 @@
 name: Publish qwc-uwsgi-base docker image
 
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "03 15 * * WED" # every Wednesday on 15:03 probably utc, but not sure yet
 
 jobs:
 
     build:
       runs-on: ubuntu-latest
-      if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
       steps:
 
       - uses: actions/checkout@master
@@ -14,37 +17,60 @@ jobs:
       - name: Get version tag
         id: get_tag
         run: |
-          if [ ${{ startsWith(github.ref, 'refs/tags/') }} = true ]; then
+          SHOULD_RUN=true
+          tag=$(date +"v%Y.%m.%d")
+          if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == refs/tags/* ]]; then
             echo "alpine_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
             echo "ubuntu_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            if git ls-remote --tags origin "$tag" | grep -q .; then
+              echo "Tag $tag already exists – skipping."
+              SHOULD_RUN=false
+            else
+              git tag "$tag"
+              git push origin "$tag"
+              echo "Tag $tag created and pushed."
+              echo "alpine_tag=$tag" >>$GITHUB_OUTPUT
+              echo "ubuntu_tag=$tag" >>$GITHUB_OUTPUT
+            fi
           else
-            echo "alpine_tag=latest" >>$GITHUB_OUTPUT
-            echo "ubuntu_tag=latest" >>$GITHUB_OUTPUT
+            SHOULD_RUN=false
           fi
+          echo "run_next=$SHOULD_RUN" >> "$GITHUB_OUTPUT"
+          
+      - name: Print tags
+        id: print_tag
+        run: |
+          echo "Alpine tag: ${{ steps.get_tag.outputs.alpine_tag }}"
+          echo "Ubuntu tag: ${{ steps.get_tag.outputs.ubuntu_tag }}"
 
       - name: Set up QEMU
+        if: steps.get_tag.outputs.run_next == 'true'
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
+        if: steps.get_tag.outputs.run_next == 'true'
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and publish Alpine docker image
-        uses: elgohr/Publish-Docker-Github-Action@v4
-        with:
-          name: sourcepole/qwc-uwsgi-base
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
-          workdir: alpine
-          platforms: linux/arm64,linux/amd64
+      # - name: Build and publish Alpine docker image
+      #    if: steps.get_tag.outputs.run_next == 'true'
+      #   uses: elgohr/Publish-Docker-Github-Action@v4
+      #   with:
+      #     name: sourcepole/qwc-uwsgi-base
+      #     username: ${{ secrets.DOCKER_HUB_USER }}
+      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      #     tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
+      #     workdir: alpine
+      #     platforms: linux/arm64,linux/amd64
 
-      - name: Build and publish Ubuntu docker image
-        uses: elgohr/Publish-Docker-Github-Action@v4
-        with:
-          name: sourcepole/qwc-uwsgi-base
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
-          workdir: ubuntu
-          platforms: linux/arm64,linux/amd64
+      # - name: Build and publish Ubuntu docker image
+      #   if: steps.get_tag.outputs.run_next == 'true'
+      #   uses: elgohr/Publish-Docker-Github-Action@v4
+      #   with:
+      #     name: sourcepole/qwc-uwsgi-base
+      #     username: ${{ secrets.DOCKER_HUB_USER }}
+      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      #     tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
+      #     workdir: ubuntu
+      #     platforms: linux/arm64,linux/amd64
