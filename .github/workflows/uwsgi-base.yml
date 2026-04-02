@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: "18 13 * * WED" # every Wednesday on 15:03 probably utc, but not sure yet
+    - cron: "23 21 * * WED" # every Wednesday on 21:23 UTC -> 23:21 swiss time
 
 jobs:
 
@@ -53,24 +53,24 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      # - name: Build and publish Alpine docker image
-      #    if: steps.get_tag.outputs.run_next == 'true'
-      #   uses: elgohr/Publish-Docker-Github-Action@v4
-      #   with:
-      #     name: sourcepole/qwc-uwsgi-base
-      #     username: ${{ secrets.DOCKER_HUB_USER }}
-      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      #     tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
-      #     workdir: alpine
-      #     platforms: linux/arm64,linux/amd64
+      - name: Build and publish Alpine docker image
+        if: steps.get_tag.outputs.run_next == 'true'
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: sourcepole/qwc-uwsgi-base
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          tags: "${{ steps.get_tag.outputs.alpine_tag }},alpine-${{ steps.get_tag.outputs.alpine_tag }}"
+          workdir: alpine
+          platforms: linux/arm64,linux/amd64
 
-      # - name: Build and publish Ubuntu docker image
-      #   if: steps.get_tag.outputs.run_next == 'true'
-      #   uses: elgohr/Publish-Docker-Github-Action@v4
-      #   with:
-      #     name: sourcepole/qwc-uwsgi-base
-      #     username: ${{ secrets.DOCKER_HUB_USER }}
-      #     password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      #     tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
-      #     workdir: ubuntu
-      #     platforms: linux/arm64,linux/amd64
+      - name: Build and publish Ubuntu docker image
+        if: steps.get_tag.outputs.run_next == 'true'
+        uses: elgohr/Publish-Docker-Github-Action@v4
+        with:
+          name: sourcepole/qwc-uwsgi-base
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          tags: "ubuntu-${{ steps.get_tag.outputs.ubuntu_tag }}"
+          workdir: ubuntu
+          platforms: linux/arm64,linux/amd64
