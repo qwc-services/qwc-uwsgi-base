@@ -17,24 +17,23 @@ jobs:
       - name: Get version tag
         id: get_tag
         run: |
-          SHOULD_RUN=true
+          SHOULD_RUN=false
           tag=$(date +"v%Y.%m.%d")
           if [[ "$GITHUB_EVENT_NAME" == "push" && "$GITHUB_REF" == refs/tags/* ]]; then
             echo "alpine_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
             echo "ubuntu_tag=${GITHUB_REF:10}" >>$GITHUB_OUTPUT
+            SHOULD_RUN=true
           elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
             if git ls-remote --tags origin "$tag" | grep -q .; then
               echo "Tag $tag already exists – skipping."
-              SHOULD_RUN=false
             else
               git tag "$tag"
               git push origin "$tag"
               echo "Tag $tag created and pushed."
               echo "alpine_tag=$tag" >>$GITHUB_OUTPUT
               echo "ubuntu_tag=$tag" >>$GITHUB_OUTPUT
+              SHOULD_RUN=true
             fi
-          else
-            SHOULD_RUN=false
           fi
           echo "run_next=$SHOULD_RUN" >> "$GITHUB_OUTPUT"
           
