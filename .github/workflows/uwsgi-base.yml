@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: "23 21 * * WED" # every Wednesday on 21:23 UTC -> 23:21 swiss time
+    - cron: "23 23 * * WED" # every Wednesday on 21:23 UTC
 
 jobs:
 
